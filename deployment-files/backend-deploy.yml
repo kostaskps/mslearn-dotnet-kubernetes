@@ -2,9 +2,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pizzabackend #default dns name
+  name: pizzabackend-deployment
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: pizzabackend
   template:
     metadata:
       labels:
@@ -12,23 +15,25 @@ spec:
     spec:
       containers:
       - name: pizzabackend
-        image: [YOUR DOCKER USERNAME]]/pizzabackend:latest
+        image: kostaskps/pizzabackend:v1.0
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
         ports:
         - containerPort: 80
         env:
         - name: ASPNETCORE_URLS
           value: http://*:80
-  selector:
-    matchLabels:
-      app: pizzabackend
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: pizzabackend
-spec:  
-  ports:
-  - port: 80
+  name: pizzabackend-svc
+spec:
   type: ClusterIP
   selector:
     app: pizzabackend
+  ports:
+  - port: 80
+#    targetPort: <Target Port>
